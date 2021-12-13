@@ -8,3 +8,5 @@ def hello(request):
 def newhello(request):
     return render(request,'hello.html')
     # return HttpResponse('hello world!')
+def login(request):
+    return render(request,'login.html')
