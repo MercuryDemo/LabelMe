@@ -1,24 +1,20 @@
 import React from 'react';
-import { Input,Radio,Button,Layout,Form,Typography,Row,Col, Space, Card, Carousel, Divider} from 'antd';
+import { Input,Button,Form,Typography, Space, Card, Divider} from 'antd';
 import axios from 'axios';
-import 'antd/dist/antd.min.css';
-import Register from './register';
+
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 // import pic from "../images/G1.jpg";
 import { Navigate } from 'react-router-dom';
 
 
-const { TextArea } = Input;
-const onChange = item => {
-  console.log(item);
-};
+
 const styles = {
     focus: {
       width: '20px',
       opacity: 1
     },
 };
-const { Text, Link } = Typography;
+
 var sectionStyle = {
     width: "1536px",
     height: "745px",
@@ -27,47 +23,50 @@ var sectionStyle = {
   };
 
 class Login extends React.Component{
-    
-    state = {
-        current : 'Login',
-        identity : 2,
-        check : -1
-    }
-    /*
+    formRef = React.createRef();
+   
     constructor(props){
-        this.register = this.register.bind(this);
+        super(props)
+
+        
         this.state = {
             current : 'Login',
-            identity : 2,
+        identity : 2,
+        check : -1,
+        input_name:'',
+        input_pwd:'',
         };
+
+        this.onLogin= this.onLogin.bind(this);
+
     }
-    */
-    register(){
-        console.log(this.props);
-        this.props.history.push('/register')
-    }
-    nameChange(item){
-        this.setState({
-            user:item.target.value,
-        },()=>{console.log(this.state.user)})
-    }
-    checkLogin(item){
+    
+    
+    onLogin= ()=>{
+        if(this.state.input_name.length==0||this.state.input_pwd.length==0) {
+            alert("请输入完整信息");
+            return;
+        }
+            
         console.log("username:" + this.state.user + " user pwd:" + this.state.pwd)
         axios({
             method: 'post',
             url: 'http://127.0.0.1:5000/login',
             data: {
-                "user_name":this.state.user,
-                "user_pwd":this.state.pwd,
+                "user_name":this.state.input_name,
+                "user_pwd":this.state.input_pwd,
+
             }
             }).then(data => {
                 console.log(data);
-                if(data.data == 1)
+                if(data.data.code == 1)
                 {
+                    alert("登录成功")
                     this.setState({check : 1})
                 }
-                if(data.data == 0)
+                if(data.data.code == 0)
                 {
+                    alert(data.data.error)
                     this.setState({check : 0})
                 }
             }).catch(function (error) {
@@ -80,22 +79,13 @@ class Login extends React.Component{
         },()=>{console.log(this.state.current)})
     }
     render(){
-        if(this.state.check === 1)
-        {
-            
-            return(
-                
-                <Navigate to="/register"/>
-            )   
-            
-        }
-        else if(this.state.check === 0)
+        if(this.state.check == 1)
         {
             return(
-            <Navigate to="/login"/>
-            )
+                <Navigate to="/label"/>
+            )      
         }
-        else if(this.state.current === 'Register')
+        else if(this.state.current == 'Register')
         {
             return (
             <Navigate to="/register"/>
@@ -121,10 +111,10 @@ class Login extends React.Component{
                                     message: 'Please input your username!',
                                 }, 
                                 ]}>
-                                    <Input 
+                                    <Input  prefix={<UserOutlined />}
                                     placeholder="Enter your name" 
-                                    onChange = {(item) => this.nameChange(item)}
-                                    prefix={<UserOutlined />}
+                                    onChange={(item) => this.setState({input_name:item.target.value},()=>{console.log(this.state.pwd)})}
+                                    
                                     />
                         </Form.Item>  
                         <Form.Item 
@@ -138,13 +128,20 @@ class Login extends React.Component{
                                     },
                                     ]}
                                 >
-                                <Input.Password prefix={<LockOutlined />} placeholder="Enter your password" onChange={(item) => this.setState({pwd:item.target.value},()=>{console.log(this.state.pwd)})}/>
+                                <Input.Password prefix={<LockOutlined />} 
+                                    placeholder="Please enter your password" 
+                                    onChange={(item) => this.setState({input_pwd:item.target.value},()=>{console.log(this.state.pwd)})}
+                                />
                         </Form.Item>
                         <br/>
                         <Form.Item>
                             <Space size='small' style={{display : "flex", flexDirection : "row", justifyContent :"center"}}>
-                                <Button type="primary" onClick={(item)=>this.checkLogin(item)} >登录</Button>
+                                <Button type="primary" onClick={(item)=>this.onLogin(item)} >登录</Button>
                                 <Button type="default" onClick={(item)=>this.ChangeStatus(item)}>注册</Button>
+                                <Button htmlType="button" onClick={(item)=>{console.log(this.state)}}>
+                        print
+                    </Button>
+
                             </Space>
                         </Form.Item> 
                     </Card>  

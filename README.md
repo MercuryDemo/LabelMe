@@ -22,4 +22,27 @@ B/S体系设计项目 开发中
    https://blog.csdn.net/juzipchy/article/details/65653683
    ```
 
-   
+
+
+
+UI设计
+
+[React的十大UI框架 - 掘金 (juejin.cn)](https://juejin.cn/post/6844903955269419015)
+
+[Usage - MUI](https://mui.com/zh/getting-started/usage/)
+
+
+
+
+
+路由问题
+
+[(55条消息) React+Ant Design设置左侧菜单导航路由的显示与隐藏（与权限无关）_weixin_34411563的博客-CSDN博客](https://blog.csdn.net/weixin_34411563/article/details/93612591)
+
+[react 项目教程 （配置路由） - 简书 (jianshu.com)](https://www.jianshu.com/p/23ffb5154818)
+
+[react 项目教程 （路由跳转 Tabbar 制作） - 简书 (jianshu.com)](https://www.jianshu.com/p/7a2fcce0ed8b)
+
+[react antd后台管理系统路由、导航设计 - 简书 (jianshu.com)](https://www.jianshu.com/p/6f16d96f8961)
+
+[(55条消息) 手牵手学习react之左侧导航栏路由封装（七）_君子不器-CSDN博客_react 侧边栏路由](https://blog.csdn.net/qq_40412456/article/details/108445326)

@@ -46,24 +46,33 @@ class Register extends React.Component{
     }
 
     checkLogin(item){
-        let tmp;
-        tmp = this.state.repassword
-        console.log("asdad" + tmp)
-        let value = this.state.email;
-        console.log("email:" + value)
-        if(tmp !== this.state.pwd)
-        {
-            console.log("sb")
-            alert("两次输入密码不一致")
+        if(this.state.user.length==0|this.state.pwd.length==0|this.state.repassword.length==0|this.state.email.length==0){
+            alert("请输入完整信息")
+            return ;
         }
-        else if(!(/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value))) {
+        // let tmp;
+        // tmp = this.state.repassword
+        // console.log("asdad" + tmp)
+        // let value = this.state.email;
+        // console.log("email:" + value)
+        if(this.state.pwd.length<6){
+            alert("密码长度过短")
+            return;
+        }
+        else if(this.state.repassword!== this.state.pwd)
+        {
+            alert("两次输入密码不一致")
+            return ;
+        }
+        else if(!(/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(this.state.email))) {
             alert('请输入正确的Email');
+            return ;
         }
         else
         {
             console.log("username:" + this.state.user + " userpwd:" + this.state.pwd + " email:" + this.state.email)
-            this.setState({repassword:item.target.value},()=>{})
-            this.setState({email:item.target.value},()=>{})
+            // this.setState({repassword:item.target.value},()=>{})
+            // this.setState({email:item.target.value},()=>{})
             axios({
                 method: 'post',
                 url: 'http://127.0.0.1:5000/register',
@@ -74,12 +83,14 @@ class Register extends React.Component{
                 }
                 }).then(data => {
                     console.log(data);
-                    if(data.data == 1)
+                    if(data.data.code == 1)
                     {
+                        alert("注册成功")
                         this.setState({check : 1,})
                     }
-                    if(data.data == 0)
+                    if(data.data.code == 0)
                     {
+                        alert(data.data.error)
                         this.setState({check : 0,})
                     }
                 }).catch(function (error) {
@@ -98,15 +109,9 @@ class Register extends React.Component{
         const item = Radio.RadioItem
         if(this.state.check === 1)
         {
-            // return(    
-            //     // <Navigate to="/success-login"/>
-            // )     
-        }
-        else if(this.state.check === 0)
-        {
-            // return(
-            //     // <Navigate to="/fail-login"/>
-            // )
+            return(    
+                <Navigate to="/label"/>
+            )     
         }
         else 
         if(this.state.current === 'Login')
@@ -139,13 +144,9 @@ class Register extends React.Component{
                                 message: 'Please input your username!',
                             }, 
                         ]}>
-                            <Input 
-                                    allowClear
-                                    maxLength={20}
-                                    placeholder="Enter your name" 
-                                    onChange = {(item) => this.nameChange(item)}
-                                    prefix={<UserOutlined />}
-                                    />
+                            
+                            <Input maxLength={20} prefix={<UserOutlined />} placeholder="Enter your name"  allowClear onChange={(item)=>{this.setState({user : item.target.value},()=>{console.log(this.state.user)})}} />
+                        
                         </Form.Item>
                         <Form.Item 
                             style={{display : "flex", flexDirection : "row", justifyContent : "center"}}
