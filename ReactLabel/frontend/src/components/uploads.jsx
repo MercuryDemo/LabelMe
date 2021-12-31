@@ -2,8 +2,9 @@ import React  from "react";
 import axios from "axios";
 import { Upload, Button, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import GlobalData from "./globalData";
 // 能一次手动上传好多个，但是没有缩略图
-class Test extends React.Component {
+class Uploads extends React.Component {
   state = {
     fileList: [],
     uploading: false,
@@ -21,8 +22,11 @@ class Test extends React.Component {
     // You can use any AJAX library you like
       axios({
           method: 'post',
-          url: 'http://127.0.0.1:5000/test',
-          headers: {'Content-Type': 'multipart/form-data'},
+          url: 'http://127.0.0.1:5000/upload',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'user_id':GlobalData.userid,
+          },
           data: formData
       })
       .then(data => {
@@ -89,4 +93,4 @@ class Test extends React.Component {
   }
 }
 
-export default Test
+export default Uploads

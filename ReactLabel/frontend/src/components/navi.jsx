@@ -1,22 +1,29 @@
 import React, { Component} from 'react'
 import { Layout, Menu, Breadcrumb } from 'antd';
-import { Navigate } from 'react-router-dom';
+
+import ShowTasks from './showtasks';
+import ShowImgs from './resource';
+import TaskMarket from './taskmarket';
+import MyTasks from './mytasks';
 import {
   DesktopOutlined,
   PieChartOutlined,
   FileOutlined,
   TeamOutlined,
   UserOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
 } from '@ant-design/icons';
 
 
-import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
-import Register from './register';
-import Login from './login';
-import Create from './create';
+ import 'antd/dist/antd.css'; // or
+// import  'antd/dist/antd.less'
+
+
 
 const { Header, Content, Footer, Sider } = Layout;
-const { SubMenu } = Menu;
+
+
 
 
 class Navi extends React.Component {
@@ -36,7 +43,7 @@ class Navi extends React.Component {
   };
 
   componentDidMount(){
-    // console.log("innavi contract"+this.props.contract);
+     console.log(this.state);
   }
   
 
@@ -44,8 +51,8 @@ class Navi extends React.Component {
     
     const { collapsed } = this.state;
     return (
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
+      <Layout style={{ minHeight: '100vh' }} theme='dark'>
+        <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse} theme='dark'>
           <div className="logo" />
           <Menu theme="dark" defaultSelectedKeys={['4']} mode="inline" 
           onSelect ={(item)=>{
@@ -57,10 +64,10 @@ class Navi extends React.Component {
               首页
             </Menu.Item>
             <Menu.Item key="1" icon={<PieChartOutlined />}>
-              我的任务
+              我的资源
             </Menu.Item>
             <Menu.Item key="2" icon={<FileOutlined />}>
-              创建任务
+              我的任务
             </Menu.Item>
             <Menu.Item key="3" icon={<DesktopOutlined />}>
               任务市场
@@ -69,9 +76,9 @@ class Navi extends React.Component {
             
           </Menu>
         </Sider>
-        <Layout className="site-layout">
-        <Header className="site-layout-background" style={{ padding: 0,color: "white"}} >
-             LABEL ME
+        <Layout className="site-layout" theme='dark'>
+        <Header className="site-layout-background" style={{ padding: 0,color: "white"}} theme='dark'  >
+             ----LABEL ME-----
             </Header>
           
           <Content style={{ margin: '0 16px' }}>
@@ -81,9 +88,10 @@ class Navi extends React.Component {
             </Breadcrumb> */}
             <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
               {/* <Chooseone keys={this.state} /> */}
-              {(this.state.selected=='1')&& <Register/>}
-              {(this.state.selected=='2') && <Create/>}
-              
+              {(this.state.selected=='1')&& <ShowImgs/>}
+              {/* {(this.state.selected=='2') && <ShowTasks/>} */}
+              {(this.state.selected=='2') && <MyTasks/>}
+              {(this.state.selected=='3') && <TaskMarket/>}
             </div>
           </Content>
           <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>

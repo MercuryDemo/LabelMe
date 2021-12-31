@@ -2,6 +2,8 @@ import React from 'react';
 import { Input,Button,Form,Typography, Space, Card, Divider} from 'antd';
 import axios from 'axios';
 
+import GlobalData from './globalData'
+
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 // import pic from "../images/G1.jpg";
 import { Navigate } from 'react-router-dom';
@@ -35,6 +37,7 @@ class Login extends React.Component{
         check : -1,
         input_name:'',
         input_pwd:'',
+        userid:'',
         };
 
         this.onLogin= this.onLogin.bind(this);
@@ -63,6 +66,8 @@ class Login extends React.Component{
                 {
                     alert("登录成功")
                     this.setState({check : 1})
+                    GlobalData.userid=data.data.userid;
+                    console.log(this.state)
                 }
                 if(data.data.code == 0)
                 {

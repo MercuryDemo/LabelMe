@@ -51,7 +51,7 @@ class Test extends React.PureComponent {
     
     var reader = new FileReader();
     var file = e.target.files[0];
-    
+    console.log(reader.result);
     reader.onloadend = () => {
       console.log('文件名为—',file);
       console.log('文件结果为—',reader.result);

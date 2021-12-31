@@ -3,11 +3,13 @@ import Login from "./components/login";
 import Register from "./components/register";
 import React from 'react'
 import Test from "./components/test";
-
+import Uploads from "./components/uploads";
+import ShowTasks from "./components/showtasks";
 
 import {HashRouter as Router,Route,Routes} from 'react-router-dom'
 import Navi from "./components/navi";
 import WorkstationConfig from "./components/canvas";
+import ShowImgs from "./components/resource";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
                 <Route path='/label'  element = {<Navi/>}/>
                 <Route path='/canvas'  element = {<WorkstationConfig/>}/>
                 <Route path='/test'  element = {<Test/>}/>
+                <Route path='/resources'  element = {<ShowImgs/>}/>
+                <Route path='/tasklist'  element = {<ShowTasks/>}/>
             </Routes>
             
             
