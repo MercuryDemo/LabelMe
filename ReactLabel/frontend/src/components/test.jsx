@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Simple from './label';
+
 
 
 
@@ -30,7 +30,7 @@ class Test extends Component {
   render() {
     
     return (
-      <Simple/>
+      123
 
       
     )

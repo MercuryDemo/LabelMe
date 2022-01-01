@@ -27,7 +27,7 @@ def login():
         account = cursor.fetchone()
         if account:
             if account[0] == data['user_pwd']:
-                #print("登陆成功")
+                
                 msg = {
                     "code": 1,
                     "userid":account[1]
@@ -64,38 +64,35 @@ def register():
         sql = sql.format(name=data["user_name"],pw=data["user_pwd"],email=data['user_mail'])
         cursor.execute(sql)
         db.commit()
-        # print("成功")
+     
         msg = {'code': 1}
         return jsonify(msg)
 
 @app.route('/upload', methods=['GET','POST'])
 def upload():
     if request.method == 'POST':
-        print("comehere")
-        print(request)
-        print(request.headers['user_id'])
-        # data = json.loads(request.get_data(as_text=True))
-        # print(data)
+        
+        
         cursor = db.cursor()
         imgDatas = request.files.getlist('files[]')
-        print(imgDatas)
+       
         for imgData in imgDatas:
-            print(imgData)
+            
             # 设置图片要保存到的路径
             path = basedir + "\\frontend\\public\\upload\\img\\"
-            # print(path)
+            
             #  获取图片名称及后缀名
             imgName = imgData.filename
-            # print(imgName)
+            
             # # 图片path和名称组成图片的保存路径
             imgName=request.headers['user_id']+'_'+imgName
             file_path = path + imgName
-            # print(file_path)
+            
             # # 保存图片
             imgData.save(file_path)
             sql = "insert into imgs values(null,'{imgname}','{userid}','{imgurl}')"
             sql = sql.format(imgname=imgData.filename,userid=request.headers['user_id'],imgurl=imgName)
-            print(sql)
+           
             cursor.execute(sql)
             db.commit()
             
@@ -105,13 +102,12 @@ def upload():
 def get_img():
     if request.method == 'POST':
         data = json.loads(request.get_data(as_text=True))
-        print(data)
-        print(data['user_id'])
+        
         cursor = db.cursor()
         sql = "select * from imgs where userid='%d'" % data["user_id"]
         cursor.execute(sql)
         myimgs = cursor.fetchall()
-        print(myimgs)
+        
         res = []
         for i in range(len(myimgs)):
             res.append({'id':myimgs[i][0],'name':myimgs[i][1],'url':myimgs[i][3]})
@@ -125,27 +121,50 @@ def get_task():
         
         data = json.loads(request.get_data(as_text=True))
         cursor = db.cursor()
-        print("hahhahha")
-        print(data['user_id'])
+       
         # return '1'
         # if data['user_id']:    
         #     sql = "select * from tasks where creater='%d'" % data["user_id"]
         # else: 
-        sql = "select * from tasks "
+        sql = "select * from tasks where state<4"#0刚刚发布，可以认领标记，2 刚刚标记结束，可以认领审核
         cursor.execute(sql)
         mytasks = cursor.fetchall()
-        print(mytasks)
+        
         res = []
         for i in range(len(mytasks)):
             sql="select imgurl from imgs where imgid='%s'" % mytasks[i][7]
             cursor.execute(sql)
             coverurl = cursor.fetchone()
-            print(coverurl)
+            
             res.append({'id':mytasks[i][0],'name':mytasks[i][1],'info':mytasks[i][2],'state':mytasks[i][6],'coverimgurl':coverurl[0]})
         msg = {
             'taskList' : res
         }
         return jsonify(msg)
+@app.route('/taskhasimg', methods=['GET','POST'])
+def get_taskhasimg():
+    if request.method == 'POST':
+        
+        data = json.loads(request.get_data(as_text=True))
+        cursor = db.cursor()
+        
+        
+        sql = "select imgid from taskhasimgs where taskid='%d'" % data['task_id']
+        cursor.execute(sql)
+        imgList = cursor.fetchall()
+       
+        res = []
+        for i in range(len(imgList)):
+            sql="select *from imgs where imgid='%s'" % imgList[i]
+            cursor.execute(sql)
+            oneimg = cursor.fetchone()
+            
+            res.append({'id':oneimg[0],'name':oneimg[1],'url':oneimg[3]})
+        msg = {
+            'imgList' : res
+        }
+        return jsonify(msg)
+
 
 @app.route('/mytask', methods=['GET','POST'])
 def get_my_task():
@@ -153,8 +172,7 @@ def get_my_task():
         
         data = json.loads(request.get_data(as_text=True))
         cursor = db.cursor()
-        print("hahhahha")
-        print(data['user_id'])
+        
         # return '1'
         # if data['user_id']:    
         sql = "select * from tasks where creater='%d'" % data["user_id"]
@@ -162,7 +180,7 @@ def get_my_task():
         #     sql = "select * from tasks "
         cursor.execute(sql)
         mytasks = cursor.fetchall()
-        print(mytasks)
+        
         res1 = []
         for i in range(len(mytasks)):
             sql="select imgurl from imgs where imgid='%s'" % mytasks[i][7]
@@ -175,13 +193,13 @@ def get_my_task():
         #     sql = "select * from tasks "
         cursor.execute(sql)
         mytasks = cursor.fetchall()
-        print(mytasks)
+        
         res2 = []
         for i in range(len(mytasks)):
             sql="select imgurl from imgs where imgid='%s'" % mytasks[i][7]
             cursor.execute(sql)
             coverurl = cursor.fetchone()
-            print(coverurl)
+            
             res2.append({'id':mytasks[i][0],'name':mytasks[i][1],'info':mytasks[i][2],'state':mytasks[i][6],'coverimgurl':coverurl[0]})
         
         sql = "select * from tasks where reviewer='%d'" % data["user_id"]
@@ -189,13 +207,13 @@ def get_my_task():
         #     sql = "select * from tasks "
         cursor.execute(sql)
         mytasks = cursor.fetchall()
-        print(mytasks)
+        
         res3 = []
         for i in range(len(mytasks)):
             sql="select imgurl from imgs where imgid='%s'" % mytasks[i][7]
             cursor.execute(sql)
             coverurl = cursor.fetchone()
-            print(coverurl)
+            
             res3.append({'id':mytasks[i][0],'name':mytasks[i][1],'info':mytasks[i][2],'state':mytasks[i][6],'coverimgurl':coverurl[0]})
         
         
@@ -207,14 +225,117 @@ def get_my_task():
         }
         return jsonify(msg)
 
+@app.route('/claim', methods=['GET','POST'])
+def claim_task():
+    if request.method == 'POST':
+        
+        data = json.loads(request.get_data(as_text=True))
+        cursor = db.cursor()
+        
+           
+        if data['type']=="label":
+            sql = "UPDATE tasks  SET labeler ='{userid}', state = 1  WHERE taskid='{taskid}'" 
+        else:    
+            sql = "UPDATE tasks  SET reviewer ='{userid}', state = 3  WHERE taskid='{taskid}'" 
+        
+        sql = sql.format(taskid=data["task_id"],userid=request.headers['user_id'])
+        
+        
+        cursor.execute(sql)
+        db.commit()
+        msg = {
+            'code' : 1,
+            'msg':'认领成功',
+        }
+        return jsonify(msg)
+
+@app.route('/finishtask', methods=['GET','POST'])
+def finish_task():
+    if request.method == 'POST':
+        
+        data = json.loads(request.get_data(as_text=True))
+        cursor = db.cursor()
+        # sql = "select state from tasks where taskid='%d'" % data["task_id"]
+        # cursor.execute(sql)
+        # state=cursor.fetchone()
+
+        if data["type"]=="success":
+            sql = "UPDATE tasks SET state=state+1 where taskid='%d'" % data["task_id"]
+        else:
+            sql = "UPDATE tasks SET state=5 where taskid='%d'" % data["task_id"] #不通过，状态
+        cursor.execute(sql)
+        db.commit()
+        msg = {
+            'code' : 1,
+            'msg':'修改成功',
+        }
+        return jsonify(msg)
+@app.route('/getannotation', methods=['GET','POST'])
+def get_anonotation():
+    if request.method == 'POST':
+        
+        data = json.loads(request.get_data(as_text=True))
+        cursor = db.cursor()
+        print(data)
+        
+        sql = "SELECT id from taskhasimgs where taskid='{taskid}' and imgid='{imgid}' " 
+        sql = sql.format(taskid=data["task_id"],imgid=data["img_id"])
+        cursor.execute(sql)
+        tmid=cursor.fetchone()
+        print(tmid[0])
+        
+        sql = "SELECT imgurl from  imgs where imgid='{imgid}' " 
+        sql = sql.format(imgid=data["img_id"])
+        cursor.execute(sql)
+        imgurl=cursor.fetchone()
+
+        sql = "SELECT * from annotations where taskimgid='%d'"%tmid[0] 
+        
+        cursor.execute(sql)
+        allanno=cursor.fetchall()
+        print(allanno)
+        
+        data = {
+            "imgurl" : imgurl[0],
+            "tmid":tmid[0],
+            "allanno":allanno
+        }
+        return jsonify(data)
+
+@app.route('/commitannotation', methods=['GET','POST'])
+def commit_anonotation():
+    if request.method == 'POST':
+        
+        data = json.loads(request.get_data(as_text=True))
+        print(data)
+        cursor = db.cursor()
+       
+        print(data["tmid"])
+        print(data["annos"])
+        sql = "delete from annotations where taskimgid='%d'"%data["tmid"]
+        cursor.execute(sql)
+        db.commit()
+        
+        for anno in data["annos"]:
+            sql = "insert into annotations values(null,'{taskimgid}','{text}','{x}','{y}','{width}','{height}','{type}')"
+            sql = sql.format(taskimgid=data["tmid"],text=anno['data']['text'],x=anno['geometry']['x'],y=anno['geometry']['y'],
+            width=anno['geometry']['width'],height=anno['geometry']['height'],type=anno['geometry']['type'])
+            cursor.execute(sql)
+            db.commit()
+        data = {
+            "code" : 1,
+            "msg":'保存成功',
+        }
+        return jsonify(data)
+
 @app.route('/create', methods=['GET','POST'])
 def create_task():
     if request.method == 'POST':
         data = json.loads(request.get_data(as_text=True))
-        print(data)
+        
         cursor = db.cursor()
         sql = "select * from tasks where taskname='%s'" % data["task_name"]
-        print(sql)
+        
         cursor.execute(sql)
         if cursor.fetchall():
             return {'code': 0,'error':"任务名已存在"}
@@ -225,15 +346,19 @@ def create_task():
         sql = "select taskid from tasks where taskname='%s'" % data["task_name"]
         cursor.execute(sql)
         thistaskid = cursor.fetchone()
-        print(thistaskid[0])
+        
         for oneimgid in data["imglist"]:
-            print(oneimgid)
+            
             sql = "insert into taskhasimgs values(null,'{taskid}','{imgid}')"
             sql = sql.format(taskid=thistaskid[0],imgid=oneimgid)
-            print(sql)
+            
             cursor.execute(sql)
             db.commit()
-        return "1"
+        data = {
+            "code": 1,
+            "msg":'创建成功'     
+        }
+        return jsonify(data)
 
 if __name__ == '__main__':
     app.run('127.0.0.1', port=5000, debug=True)

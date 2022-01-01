@@ -49,7 +49,6 @@ class Create extends Component {
                 if(data.data.code == "1")
                 {
                     alert(data.data.msg);
-                    this.onReset();
                 }
                 else 
                 {
@@ -58,7 +57,7 @@ class Create extends Component {
                 }
         }
             )).catch(function (error) {
-        console.log(error);
+              alert(error);
         });
     
     this.formRef.current.resetFields();

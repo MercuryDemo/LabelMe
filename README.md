@@ -21,6 +21,12 @@ B/S体系设计项目 开发中
    https://www.cnblogs.com/ExMan/p/6758338.html
    https://blog.csdn.net/juzipchy/article/details/65653683
    ```
+   
+6. ```shell
+   npx sb init
+   ```
+
+
 
 
 
@@ -46,3 +52,10 @@ UI设计
 [react antd后台管理系统路由、导航设计 - 简书 (jianshu.com)](https://www.jianshu.com/p/6f16d96f8961)
 
 [(55条消息) 手牵手学习react之左侧导航栏路由封装（七）_君子不器-CSDN博客_react 侧边栏路由](https://blog.csdn.net/qq_40412456/article/details/108445326)
+
+
+
+
+
+## 进度
+

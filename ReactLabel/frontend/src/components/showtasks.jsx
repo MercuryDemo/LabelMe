@@ -23,7 +23,7 @@ class ShowTasks extends React.Component {
     }
     
   }
-  componentDidMount = () => {
+  componentDidMount  = () => {
     console.log("before:");
     console.log(items);
     var items=[];

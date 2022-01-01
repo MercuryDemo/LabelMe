@@ -17,6 +17,7 @@ import {
 
 
  import 'antd/dist/antd.css'; // or
+import LabelTask from './labelimg';
 // import  'antd/dist/antd.less'
 
 
@@ -42,9 +43,7 @@ class Navi extends React.Component {
     this.setState({ collapsed });
   };
 
-  componentDidMount(){
-     console.log(this.state);
-  }
+ 
   
 
   render() {
@@ -92,6 +91,7 @@ class Navi extends React.Component {
               {/* {(this.state.selected=='2') && <ShowTasks/>} */}
               {(this.state.selected=='2') && <MyTasks/>}
               {(this.state.selected=='3') && <TaskMarket/>}
+              {/* {(this.state.selected=='4') && <LabelTask/>} */}
             </div>
           </Content>
           <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
