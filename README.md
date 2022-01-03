@@ -25,6 +25,10 @@ B/S体系设计项目 开发中
 6. ```shell
    npx sb init
    ```
+   
+7. pip install opencv-python
+
+
 
 
 

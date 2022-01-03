@@ -1,5 +1,7 @@
 # app.py
 import os
+import cv2
+import xml.dom.minidom as minidom
 from flask import Flask,render_template,request,jsonify
 from flask.wrappers import Request
 from flask_cors import CORS
@@ -30,7 +32,8 @@ def login():
                 
                 msg = {
                     "code": 1,
-                    "userid":account[1]
+                    "userid":account[1],
+                    "username":data["user_name"]
                     
                 }
                 return jsonify(msg)
@@ -71,32 +74,53 @@ def register():
 @app.route('/upload', methods=['GET','POST'])
 def upload():
     if request.method == 'POST':
-        
-        
         cursor = db.cursor()
         imgDatas = request.files.getlist('files[]')
-       
         for imgData in imgDatas:
-            
             # 设置图片要保存到的路径
-            path = basedir + "\\frontend\\public\\upload\\img\\"
-            
+            if request.headers['type']=='1':
+                path = basedir + "\\frontend\\public\\upload\\img\\"
+            else:
+                print("hahha")
+                path = basedir + "\\frontend\\public\\upload\\video\\"
             #  获取图片名称及后缀名
-            imgName = imgData.filename
-            
-            # # 图片path和名称组成图片的保存路径
-            imgName=request.headers['user_id']+'_'+imgName
+            imgName = imgData.filename #图片本来的名称
+            # 图片path和名称组成图片的保存路径
+            imgName=request.headers['user_id']+'_'+imgName #用户id_图片名称
             file_path = path + imgName
-            
-            # # 保存图片
-            imgData.save(file_path)
-            sql = "insert into imgs values(null,'{imgname}','{userid}','{imgurl}')"
-            sql = sql.format(imgname=imgData.filename,userid=request.headers['user_id'],imgurl=imgName)
-           
+            imgData.save(file_path) # 保存图片
+            sql = "insert into imgs values(null,'{imgname}','{userid}','{imgurl}','{type}')"
+            sql = sql.format(imgname=imgData.filename,userid=request.headers['user_id'],imgurl=imgName,type=request.headers['type'])
             cursor.execute(sql)
             db.commit()
-            
-        return "1"
+            print(request.headers['type'])
+            if request.headers['type']=='0':
+                print("hahhahha")
+                output_path = basedir + "\\frontend\\public\\upload\\img\\" # 输出文件夹
+                video_path = file_path # 视频地址
+                print(video_path)
+                interval = (int)(request.headers['interval'])  # 每间隔10帧取一张图片
+                num = 1
+                vid = cv2.VideoCapture(video_path)
+                while vid.isOpened():
+                    is_read, frame = vid.read()
+                    if is_read:
+                        if num % interval == 1:
+                            file_name = '%08d' % num
+                            cv2.imwrite(output_path + str(imgName+'-'+file_name) + '.jpg', frame)
+                            # 00000111.jpg 代表第111帧
+                            cv2.waitKey(1)
+                            sql = "insert into imgs values(null,'{imgname}','{userid}','{imgurl}','{type}')"
+                            sql = sql.format(imgname=imgData.filename+'-'+file_name,userid=request.headers['user_id'],imgurl=imgName+'-'+file_name+'.jpg',type=2)
+                            cursor.execute(sql)
+                            db.commit()
+                        num += 1
+                    else:
+                        break
+          
+                        
+    return "1"
+
 
 @app.route('/myimg', methods=['GET','POST'])
 def get_img():
@@ -104,7 +128,7 @@ def get_img():
         data = json.loads(request.get_data(as_text=True))
         
         cursor = db.cursor()
-        sql = "select * from imgs where userid='%d'" % data["user_id"]
+        sql = "select * from imgs where userid='%d' and type>0" % data["user_id"]
         cursor.execute(sql)
         myimgs = cursor.fetchall()
         
@@ -112,7 +136,8 @@ def get_img():
         for i in range(len(myimgs)):
             res.append({'id':myimgs[i][0],'name':myimgs[i][1],'url':myimgs[i][3]})
         msg = {
-            'imgList' : res
+            'imgList' : res,
+           
         }
         return jsonify(msg)
 @app.route('/alltask', methods=['GET','POST'])
@@ -359,6 +384,108 @@ def create_task():
             "msg":'创建成功'     
         }
         return jsonify(data)
+
+    
+@app.route('/output', methods=['GET','POST'])
+def output():
+    if request.method == 'POST':
+        
+        data = json.loads(request.get_data(as_text=True))
+        cursor = db.cursor()
+        sql = "select * from taskhasimgs where taskid='%s'" % data["task_id"]
+        cursor.execute(sql)
+        allimgs=cursor.fetchall()
+        for i in range(len(allimgs)):
+            doc = minidom.Document() #1. 创建dom树对象
+            root_node = doc.createElement("annotation")#2. 创建根结点，并用dom对象添加根结点
+            doc.appendChild(root_node)
+            folder_node = doc.createElement("folder")  #3. 创建结点，结点包含一个文本结点, 再将结点加入到根结点
+            folder_value = doc.createTextNode('upload')
+            folder_node.appendChild(folder_value)
+            root_node.appendChild(folder_node)
+
+            sql = "select * from imgs where imgid='%s'" % allimgs[i][2]
+            cursor.execute(sql)
+            oneimg=cursor.fetchone()
+
+            filename_node = doc.createElement("filename")
+            filename_value = doc.createTextNode(oneimg[1])
+            filename_node.appendChild(filename_value)
+            root_node.appendChild(filename_node)
+
+            path_node = doc.createElement("path")
+            path_value = doc.createTextNode("/upload/img"+oneimg[3])
+            path_node.appendChild(path_value)
+            root_node.appendChild(path_node)
+
+            source_node = doc.createElement("source")
+            database_node = doc.createElement("database")
+            database_node.appendChild(doc.createTextNode("upload"))
+            source_node.appendChild(database_node)
+            root_node.appendChild(source_node)
+            
+            img = cv2.imread(basedir + "\\frontend\\public\\upload\\img\\"+oneimg[3])  #读取图片信息
+            sp = img.shape #[高|宽|像素值由三种原色构成]
+            
+            size_node = doc.createElement("size")
+            for item, value in zip(["width", "height", "depth"], [sp[1], sp[0], sp[2]]):
+                elem = doc.createElement(item)
+                elem.appendChild(doc.createTextNode(str(value)))
+                size_node.appendChild(elem)
+            root_node.appendChild(size_node)
+
+            seg_node = doc.createElement("segmented")
+            seg_node.appendChild(doc.createTextNode(str(0)))
+            root_node.appendChild(seg_node)
+
+            sql = "select * from annotations where taskimgid='%s'" % allimgs[i][0]
+            cursor.execute(sql)
+            allannos=cursor.fetchall()
+            for j in range(len(allannos)):
+                obj_node = doc.createElement("object")
+                name_node = doc.createElement("name")
+                name_node.appendChild(doc.createTextNode(allannos[j][2]))
+                obj_node.appendChild(name_node)
+
+                pose_node = doc.createElement("pose")
+                pose_node.appendChild(doc.createTextNode("Unspecified"))
+                obj_node.appendChild(pose_node)
+
+                trun_node = doc.createElement("truncated")
+                trun_node.appendChild(doc.createTextNode(str(0)))
+                obj_node.appendChild(trun_node)
+
+                trun_node = doc.createElement("difficult")
+                trun_node.appendChild(doc.createTextNode(str(0)))
+                obj_node.appendChild(trun_node)
+
+                bndbox_node = doc.createElement("bndbox")
+                for item, value in zip(["xmin", "ymin", "xmax", "ymax"], [allannos[j][3], allannos[j][4], allannos[j][3]+allannos[j][5], allannos[j][4]+allannos[j][6]]):
+                    elem = doc.createElement(item)
+                    elem.appendChild(doc.createTextNode(str(value)))
+                    bndbox_node.appendChild(elem)
+                obj_node.appendChild(bndbox_node)
+                root_node.appendChild(obj_node)
+
+            print(allimgs[i][0])
+            url=basedir + "\\frontend\\public\\download\\"+str(allimgs[i][0])+".xml"
+            with open(url, "w", encoding="utf-8") as f:
+                # 4.writexml()第一个参数是目标文件对象，第二个参数是根节点的缩进格式，第三个参数是其他子节点的缩进格式，
+                # 第四个参数制定了换行格式，第五个参数制定了xml内容的编码。
+                doc.writexml(f, indent='', addindent='\t', newl='\n', encoding="utf-8")
+    data = {
+        "code": 1,
+        "msg":"导出成功"
+    }
+    return jsonify(data)
+    # 每一个结点对象（包括dom对象本身）都有输出XML内容的方法，如：toxml()--字符串, toprettyxml()--美化树形格式。
+    # print(doc.toxml(encoding="utf-8"))  # 输出字符串
+    # print(doc.toprettyxml(indent='', addindent='\t', newl='\n', encoding="utf-8"))   #输出带格式的字符串
+    # doc.writexml() #将prettyxml字符串写入文件
+
+
+
+
 
 if __name__ == '__main__':
     app.run('127.0.0.1', port=5000, debug=True)

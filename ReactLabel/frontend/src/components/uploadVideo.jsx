@@ -1,15 +1,26 @@
 import React  from "react";
 import axios from "axios";
-import { Upload, Button, message } from 'antd';
+import { Upload, Button, message,Modal,Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import GlobalData from "./globalData";
+
 // 能一次手动上传好多个，但是没有缩略图
-class Uploads extends React.Component {
+class UploadVideo extends React.Component {
   state = {
     fileList: [],
     uploading: false,
+    interval:10,
+    visible:false,
   };
-
+  showModal=()=>{
+    this.setState({visible:true})
+  }
+  handleCancel = () => {//点击取消按钮触发的事件
+    console.log('Clicked cancel button');
+    this.setState({
+      visible: false,
+    });
+  }
   handleUpload = () => {
     const { fileList } = this.state;
     const formData = new FormData();
@@ -18,7 +29,9 @@ class Uploads extends React.Component {
     });
     this.setState({
       uploading: true,
+      visible:false,
     });
+    console.log(formData)
     // You can use any AJAX library you like
       axios({
           method: 'post',
@@ -26,7 +39,8 @@ class Uploads extends React.Component {
           headers: {
             'Content-Type': 'multipart/form-data',
             'user_id':GlobalData.userid,
-            'type':1
+            'type':0,
+            'interval':this.state.interval,
           },
           data: formData
       })
@@ -67,6 +81,13 @@ class Uploads extends React.Component {
         });
       },
       beforeUpload: file => {
+        console.log(file)
+        if (file.type !== 'video/mp4') {
+          message.error(`${file.name} is not a mp4 file`);
+          return  Upload.LIST_IGNORE;
+        }
+        
+        
         this.setState(state => ({
           fileList: [...state.fileList, file],
         }));
@@ -77,12 +98,22 @@ class Uploads extends React.Component {
 
     return (
       <>
+      <Modal 
+        title="请输入间隔帧数"
+          visible={this.state.visible}
+          onOk={this.handleUpload}
+          onCancel={this.handleCancel}
+        >
+          
+          <Input placeholder="10" onChange={(item) => this.setState({interval:item.target.value},()=>{console.log(this.state.interval)})}/>
+
+        </Modal>
         <Upload {...props}>
-          <Button icon={<UploadOutlined />}>Select Image</Button>
+          <Button icon={<UploadOutlined />}>Select Video</Button>
         </Upload>
         <Button
           type="primary"
-          onClick={this.handleUpload}
+          onClick={this.showModal}
           disabled={fileList.length === 0}
           loading={uploading}
           style={{ marginTop: 16 }}
@@ -94,4 +125,4 @@ class Uploads extends React.Component {
   }
 }
 
-export default Uploads
+export default UploadVideo

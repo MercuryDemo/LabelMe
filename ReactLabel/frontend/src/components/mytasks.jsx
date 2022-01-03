@@ -106,6 +106,35 @@ class MyTasks extends React.Component {
       visible: false,
     });
   }
+  output(t){
+    
+    axios({
+      method: 'post',
+      url: 'http://127.0.0.1:5000/output',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'user_id':GlobalData.userid,
+      },
+      data: {
+          "task_id":t,
+      }
+      }).then((data =>{
+              console.log(data);
+              if(data.data.code == "1")
+              {
+                  alert(data.data.msg);
+                  this.onReset();
+              }
+              else 
+              {
+                  alert(data.data.error);
+                  return ;
+              }
+      }
+          )).catch(function (error) {
+      console.log(error);
+      });
+  }
   taskdetail(taskid,taskstate){
     var items4=[]
     this.setState({
@@ -175,6 +204,10 @@ class MyTasks extends React.Component {
                         
                         <div>
                         {stateicons[res.data.CreateTask[i].state]}
+                        <Button type="dashed" style={{float:"left"}} onClick={()=>this.output(res.data.CreateTask[i].id)}>
+                            导出结果
+                        </Button>
+                        
                         <Button type="dashed" style={{float:"right"}} onClick={()=>this.taskdetail(res.data.CreateTask[i].id,res.data.CreateTask[i].state)}>
                             查看详情
                         </Button>
@@ -272,8 +305,9 @@ class MyTasks extends React.Component {
       <>
       
       <Modal title="任务详情"
-       
-      bodyStyle={{width:1000,height:600}}
+      //  
+      width="1000px"
+       bodyStyle={{height:"800px"}}
           visible={visible}
           //  onOk={this.handleOk} 
           onCancel={this.handleCancel}
@@ -286,7 +320,7 @@ class MyTasks extends React.Component {
          
           {this.state.items4}
        
-         <LabelImg key={this.state.chosenimgid} canlabel={this.state.activeTabKey=="tab2"} taskid={this.state.chosentaskid} imgid={this.state.chosenimgid}/> 
+         <LabelImg key={this.state.chosenimgid} canlabel={this.state.activeTabKey=="tab2"} disabled={this.state.chosentaskstate!=1} candownload={this.state.activeTabKey=="tab1"} taskid={this.state.chosentaskid} imgid={this.state.chosenimgid}/> 
         </Modal>
        <Card
           style={{ width: '100%' }}

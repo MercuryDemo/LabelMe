@@ -8,7 +8,7 @@ import 'antd/dist/antd.css';
 import Uploads from './uploads';
 import { Affix, Button } from 'antd'
 import Create from './create';
-
+import UploadVideo from'./uploadVideo';
 
 // var items=[]
 
@@ -41,6 +41,10 @@ class ShowImgs extends React.Component {
     items.push(
       <Col span={6}>
        <Uploads/>
+        </Col>)
+    items.push(
+      <Col span={6}>
+       <UploadVideo/>
         </Col>)
     console.log("after:");
     console.log(items);

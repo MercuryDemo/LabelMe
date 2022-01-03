@@ -4,19 +4,17 @@ import React, { Component } from 'react';
 
 import GlobalData from './globalData';
 
-class Test extends Component {
+class Wel extends Component {
   constructor(props){
     super(props);
     this.state={
 
     }
- 
   }
   
   render() {
     
     return (
-      // 123
       <div>
           {GlobalData.username}, Welcome to LabelMe!
           <br/>
@@ -28,4 +26,4 @@ class Test extends Component {
   }
 }
  
-export default Test;
+export default Wel;

@@ -2,6 +2,7 @@ import React, { Component} from 'react';
 import Annotation from 'react-image-annotation';
 import { Card,Image,Carousel,Button } from 'antd';
 import axios from 'axios';
+import TextArea from 'antd/lib/input/TextArea';
 class LabelImg extends Component {
   constructor(props){
     console.log("new constructor")
@@ -156,38 +157,40 @@ class LabelImg extends Component {
   }
   render () {
     return (
-      <div style={{ width: 400 ,height:400}}>
-        
-        {/* <Card style={{ width: 500 ,height:500}}> */}
+        <div  >
               <Annotation
+                 style={{height:"600px"}}
                 src={"upload/img/"+this.state.imgurl}
                 annotations={this.state.annotations}
                 type={this.state.type}
                 value={this.state.annotation}
                 onChange={this.onChange}
                 onSubmit={this.onSubmit}
+                // width="500px"
+                // height="500px"
               />
               {this.props.canlabel==1&&
-                <div>
-                <Button type="primary" onClick={this.clearanno}>
+                <div style={{textAlign: 'center' }}>
+                  <br/>
+                <Button disabled ={this.props.disabled} type="dashed" onClick={this.clearanno}>
                       清空
                 </Button>
-              <Button  type="primary" onClick={this.saveanno}>
+                &nbsp;
+              <Button  disabled ={this.props.disabled} type="dashed" onClick={this.saveanno}>
                           保存
               </Button>
-              <Button  type="primary" onClick={this.addanno}>
-                          add
-              </Button>
-              <Button  type="primary" onClick={()=>console.log(this.state)}>
-                          print
-              </Button>
-                </div>}
               
-          {/* </Card> */}
-          
-         {/* <button htmlType="button" onClick={()=>{console.log(this.state)}}>
-                        print
-          </button> */}
+                </div>}
+                {this.props.candownload==1&&
+                <div style={{textAlign: 'center' }}>
+                  <br/>
+                  <a href={"upload/img/"+this.state.imgurl} download>下载图片</a>
+                  &nbsp;&nbsp;&nbsp;
+                  <a href={"download/"+this.state.tmid+".xml"} download>下载标记</a>
+              
+                </div>}
+
+              
          </div>
       
     )

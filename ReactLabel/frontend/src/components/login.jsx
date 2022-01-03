@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input,Button,Form,Typography, Space, Card, Divider} from 'antd';
 import axios from 'axios';
-
+import pic from "../BG.jpg";
 import GlobalData from './globalData'
 
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -21,7 +21,7 @@ var sectionStyle = {
     width: "1536px",
     height: "745px",
   // makesure here is String确保这里是一个字符串，以下是es6写法
-    // backgroundImage: `url(${pic})` 
+     backgroundImage: `url(${pic})` 
   };
 
 class Login extends React.Component{
@@ -67,6 +67,7 @@ class Login extends React.Component{
                     alert("登录成功")
                     this.setState({check : 1})
                     GlobalData.userid=data.data.userid;
+                    GlobalData.username=data.data.username;
                     console.log(this.state)
                 }
                 if(data.data.code == 0)
