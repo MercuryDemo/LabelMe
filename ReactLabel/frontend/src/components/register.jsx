@@ -55,6 +55,10 @@ class Register extends React.Component{
         // console.log("asdad" + tmp)
         // let value = this.state.email;
         // console.log("email:" + value)
+        if(this.state.user.length<6){
+            alert("用户名长度过短")
+            return;
+        }
         if(this.state.pwd.length<6){
             alert("密码长度过短")
             return;
@@ -110,7 +114,7 @@ class Register extends React.Component{
         if(this.state.check === 1)
         {
             return(    
-                <Navigate to="/label"/>
+                <Navigate to="/login"/>
             )     
         }
         else 

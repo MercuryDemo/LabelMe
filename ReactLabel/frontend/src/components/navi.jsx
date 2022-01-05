@@ -1,7 +1,7 @@
 import React, { Component} from 'react'
-import { Layout, Menu, Button } from 'antd';
+import { Layout, Menu, Button,Avatar } from 'antd';
 
-
+import { Navigate } from 'react-router-dom';
 import ShowImgs from './resource';
 import TaskMarket from './taskmarket';
 import MyTasks from './mytasks';
@@ -12,6 +12,7 @@ import {
   PieChartOutlined,
   FileOutlined,
   HomeOutlined,
+  UserOutlined 
 } from '@ant-design/icons';
 
 import GlobalData from './globalData';
@@ -33,7 +34,7 @@ class Navi extends React.Component {
     this.state = {
       collapsed: false,
       selected: "4",
-      islogin:0,
+
 
     };
     
@@ -49,7 +50,7 @@ class Navi extends React.Component {
   
 
   render() {
-    // if(GlobalData.userid==1){
+    // if(GlobalData.userid==-1){
     //   return(
     //     <Navigate to="/label"/> ) 
     // }
@@ -59,6 +60,14 @@ class Navi extends React.Component {
       return (
         <Layout style={{ minHeight: '100vh' }} theme='dark'>
           <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse} theme='dark'>
+          <Avatar size="large" icon={<UserOutlined />} />
+          <Button type="text" style={{color: "white"}}>{GlobalData.username}</Button>
+          <Button type="link" style={{float:"right"}} onClick={(item)=>{
+                console.log("hahha");
+                GlobalData.userid=-1;
+                alert("您已退出登录！")
+                }}>Logout</Button>
+         
             <div className="logo" />
             <Menu theme="dark" defaultSelectedKeys={['4']} mode="inline" 
             onSelect ={(item)=>{
@@ -85,10 +94,7 @@ class Navi extends React.Component {
           <Layout className="site-layout" theme='dark'>
           <Header className="site-layout-background" style={{ padding: 0,color: "white"}} theme='dark'  >
               ----LABEL ME-----
-              <Button type="link" style={{float:"right"}} onClick={(item)=>{
-                console.log("hahha");
-                GlobalData.userid=-1;}}>logout</Button>
-              <Button type="text" style={{float:"right",color: "white"}}>hello,{GlobalData.username}</Button>
+              
               
           </Header>
             

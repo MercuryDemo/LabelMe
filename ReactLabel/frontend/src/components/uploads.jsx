@@ -31,15 +31,15 @@ class Uploads extends React.Component {
           data: formData
       })
       .then(data => {
-          if(data.data == 1)
+          if(data.data.code == 1)
           {
             this.setState({fileList: [],});
-            alert("upload successfully.");
+            alert(data.data.msg);
             // message.success('upload successfully.');
           }
-          if(data.data == 0)
+          else if(data.data.code == 0)
           {
-            message.error('upload failed.');
+            alert(data.data.error);
           }
       })
       .catch(function (error) {
@@ -47,7 +47,8 @@ class Uploads extends React.Component {
         console.log(error);
       })
       .finally(() => {
-        this.setState({uploading: false,});
+        console.log("in finally");
+         this.setState({uploading: false,});
       })
       ;
   };

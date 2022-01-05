@@ -87,6 +87,18 @@ def upload():
             imgName = imgData.filename #图片本来的名称
             # 图片path和名称组成图片的保存路径
             imgName=request.headers['user_id']+'_'+imgName #用户id_图片名称
+            
+            sql = "select * from imgs where imgname='{imgname}'and userid='{userid}'"
+            sql = sql.format(imgname=imgData.filename,userid=request.headers['user_id'])
+            cursor.execute(sql)
+            if cursor.fetchone():
+                msg=imgData.filename+" already exists!"
+                data = {
+                    'code':0,
+                    'error':msg,
+                
+                }
+                return jsonify(data) 
             file_path = path + imgName
             imgData.save(file_path) # 保存图片
             sql = "insert into imgs values(null,'{imgname}','{userid}','{imgurl}','{type}')"
@@ -118,8 +130,13 @@ def upload():
                     else:
                         break
           
-                        
-    return "1"
+        data = {
+                'code':1,
+                'msg':"upload successfully."
+            
+            }
+        return jsonify(data)                 
+    
 
 
 @app.route('/myimg', methods=['GET','POST'])

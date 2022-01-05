@@ -87,6 +87,8 @@ class Login extends React.Component{
     render(){
         if(this.state.check == 1)
         {
+            this.setState({check:-1})
+            
             return(
                 <Navigate to="/label"/>
             )      
@@ -144,9 +146,7 @@ class Login extends React.Component{
                             <Space size='small' style={{display : "flex", flexDirection : "row", justifyContent :"center"}}>
                                 <Button type="primary" onClick={(item)=>this.onLogin(item)} >登录</Button>
                                 <Button type="default" onClick={(item)=>this.ChangeStatus(item)}>注册</Button>
-                                <Button htmlType="button" onClick={(item)=>{console.log(this.state)}}>
-                        print
-                    </Button>
+                               
 
                             </Space>
                         </Form.Item> 

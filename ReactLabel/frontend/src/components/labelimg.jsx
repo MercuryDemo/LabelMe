@@ -2,7 +2,6 @@ import React, { Component} from 'react';
 import Annotation from 'react-image-annotation';
 import { Card,Image,Carousel,Button } from 'antd';
 import axios from 'axios';
-import TextArea from 'antd/lib/input/TextArea';
 class LabelImg extends Component {
   constructor(props){
     console.log("new constructor")

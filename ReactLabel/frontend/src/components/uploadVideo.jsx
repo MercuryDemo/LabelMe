@@ -45,25 +45,27 @@ class UploadVideo extends React.Component {
           data: formData
       })
       .then(data => {
-          if(data.data == 1)
-          {
-            this.setState({fileList: [],});
-            alert("upload successfully.");
-            // message.success('upload successfully.');
-          }
-          if(data.data == 0)
-          {
-            message.error('upload failed.');
-          }
+        if(data.data.code == 1)
+        {
+          this.setState({fileList: [],});
+          alert(data.data.msg);
+          // message.success('upload successfully.');
+        }
+        else if(data.data.code == 0)
+        {
+          alert(data.data.error);
+        }
       })
       .catch(function (error) {
         message.error('upload failed.');
         console.log(error);
       })
       .finally(() => {
+        console.log("in finally");
         this.setState({uploading: false,});
       })
       ;
+    
   };
 
   render() {

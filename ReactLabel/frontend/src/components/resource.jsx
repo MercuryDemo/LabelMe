@@ -129,9 +129,6 @@ class ShowImgs extends React.Component {
   render(){
     return (
       <>
-        
-     
-        
           <Row justify="cneter" gutter={[8, 16]}>
             {this.state.items}
           </Row>
